@@ -11,15 +11,16 @@ int main(void)
   int word_length = 0;
   int cursor = 0;
   int no_more_args = 0;
+  int arg_count = 0;
 
   while (should_run){
     printf("CSCI3120>");
     fflush(stdout);
-    
+    memset(args, '\0', sizeof(args));
 
     // read line and store as char array
-    char line[1024];
-    char *cmd = fgets(line, 1024, stdin);
+    char line[640];
+    char *cmd = fgets(line, 640, stdin);
     
     if (!cmd) {
       printf("Line not read.\n");
@@ -27,18 +28,17 @@ int main(void)
     else {
       printf("Line was read.\n");
       no_more_args = 0;
+      arg_count = 0;
       cursor = 0;
       
       while (!no_more_args) {
+        // Get length of next word, store word in char []
         word_length = 0;
-        
-        // Get length of next word, store in char []
 	while (!(isspace(cmd[cursor++]))) {
 	  word_length++;
         }
         
 	char word [word_length + 1];
-
 	for (i=0; i<word_length; i++) {
       	  word[i] = cmd[cursor - word_length - 1 + i];
         }
@@ -46,13 +46,23 @@ int main(void)
         
         // Put word into args[]
         if (word_length > 0) {
-          printf("Word: %s\n", word);
+          args[arg_count] = (char *) malloc(word_length + 1);
+          strcpy(args[arg_count++], word);
         }
-      
+        
         if (cmd[cursor-1] == '\n') {
           no_more_args = 1;
         }
       }
+      
+      // Print the args array
+      for (i=0; i<(sizeof(args) / 8); i++) {
+        if (args[i] == '\0') {
+          break;
+        }
+        printf("%s | ", args[i]);
+      }
+      printf("\n");
     }
     /**
     * Take m input and keep in list/array with number
