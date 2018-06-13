@@ -9,6 +9,8 @@ int main(void)
   int should_run = 1; /* flag to determine when to exit the program */
   int i = 0;
   int word_length = 0;
+  int cursor = 0;
+  int no_more_args = 0;
 
   while (should_run){
     printf("CSCI3120>");
@@ -24,20 +26,33 @@ int main(void)
     }
     else {
       printf("Line was read.\n");
-      // get first word from line
-      // How long is the first word?
-      word_length = 0;
-      while (!(isspace(cmd[word_length])) /* The next character is not whitespace */) {
-	// increment word length
-	word_length++;
-      }
-      char word[word_length];
-      for (i=0; i<word_length; i++) {
-      	word[i] = cmd[i];
-      }
+      no_more_args = 0;
+      cursor = 0;
+      
+      while (!no_more_args) {
+        word_length = 0;
+        
+        // Get length of next word, store in char []
+	while (!(isspace(cmd[cursor++]))) {
+	  word_length++;
+        }
+        
+	char word [word_length + 1];
 
-      printf("First word: %s\n", word);
-
+	for (i=0; i<word_length; i++) {
+      	  word[i] = cmd[cursor - word_length - 1 + i];
+        }
+        word[word_length] = '\0';
+        
+        // Put word into args[]
+        if (word_length > 0) {
+          printf("Word: %s\n", word);
+        }
+      
+        if (cmd[cursor-1] == '\n') {
+          no_more_args = 1;
+        }
+      }
     }
     /**
     * Take m input and keep in list/array with number
