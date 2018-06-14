@@ -76,7 +76,7 @@ int main(void)
 }
 
 /*
- * Reads a command and returns it as an array of strings
+ * Reads a command and places it in an array of strings
  */
 void readline(char * args[]) {
   // read line and store as char array
