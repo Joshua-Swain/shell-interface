@@ -8,7 +8,23 @@
 #include <ctype.h>
 
 #define MAX_LINE 80 /* The maximum length command */
+#define HIST_NUM 10 /*number of history*/
 
+struct hist
+{
+  int id;
+  char cmd[MAX_LINE + 1];
+};
+
+static int nid = 1; /* the id for the next command added into the
+history */
+struct hist records[HIST_NUM]; /* up to NUM_HISTORY records */
+/* try to get the history command index from the arg
+* ifarg is not a !! or !followed by N, simply return -1. */
+int get_history_index(char arg[]);
+int fetch_history(int index, char command[]);
+void addToHistory(char line[]); //add command to the history
+void display();//displays the history
 void readline(char * args []);
 int argc;
 
@@ -95,5 +111,58 @@ void readline(char * args[]) {
       if (cmd[cursor-1] == '\n') {
         no_more_args = 1;
       }
+  }
+}
+
+// Get the command of the given index, if failed return 0.
+//otherwise, return 1.
+//returns the most recent command if index =0
+//otherwise, returns the command in the given index
+int getHistory(int index, char cmd[])
+{
+  int i;
+  if (nid == 1)
+  {
+    return 0; //no command added
+  }
+  if (index == 0)
+  {
+    index = nid - 1; //get the most recent
+  }
+
+  for (i = HIST_NUM - 1; i >= 0; i--)
+  {
+    if (records[i].id == index)
+    {
+    //Get the command in the given index then copy the command
+    strcpy(cmd, records[i].cmd);
+    return 1;
+    }
+  }
+return 0; //no command with the index, failed
+}
+
+//add the line of command into history
+void addToHistory(char line[])
+{
+  int i;
+  //shift all history to the left
+  for (i = 0; i < HIST_NUM - 1; i++)
+  {
+    records[i] = records[i + 1];
+  }
+ //save the line to the last position in the records array
+ records[HIST_NUM - 1].id = nid++;
+ strcpy(records[HIST_NUM - 1].cmd, line);
+}
+
+//display commands in history
+void display()
+{
+  int i;
+  //displays each command in the history
+  for (i = HIST_NUM- 1; i >= 0 && records[i].id > 0; i--)
+  {
+    printf("%3d %s\n", records[i].id, records[i].cmd);
   }
 }
